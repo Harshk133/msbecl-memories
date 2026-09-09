@@ -1,17 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { useGesture } from '@use-gesture/react';
 
 const DEFAULT_IMAGES = [
-  {
-    src: '/group-1.png',
-    alt: 'Abstract art'
-  },
-  {
-    src: '/group-2.png',
-    alt: 'Modern sculpture'
-  },
   {
     src: '/group-3.jpeg',
     alt: 'Digital artwork'
@@ -34,10 +26,6 @@ const DEFAULT_IMAGES = [
   },
   {
     src: '/group-6.jpeg',
-    alt: 'Social media image'
-  },
-  {
-    src: '/group-7.jpg',
     alt: 'Social media image'
   },
   {
@@ -70,10 +58,6 @@ const DEFAULT_IMAGES = [
   },
   {
     src: '/group-15.jpeg',
-    alt: 'Social media image'
-  },
-  {
-    src: '/group-16.png',
     alt: 'Social media image'
   },
   {
@@ -180,7 +164,7 @@ export default function DomeGallery({
   minRadius = 600,
   maxRadius = Infinity,
   padFactor = 0.25,
-  overlayBlurColor = '#120F17',
+  overlayBlurColor = null,
   maxVerticalRotationDeg = DEFAULTS.maxVerticalRotationDeg,
   dragSensitivity = DEFAULTS.dragSensitivity,
   enlargeTransitionMs = DEFAULTS.enlargeTransitionMs,
@@ -228,6 +212,27 @@ export default function DomeGallery({
   }, []);
 
   const items = useMemo(() => buildItems(images, segments), [images, segments]);
+  const [themeOverlayColor, setThemeOverlayColor] = useState('#120F17');
+  const resolvedOverlayColor = overlayBlurColor ?? themeOverlayColor;
+
+  useEffect(() => {
+    const updateOverlayColor = () => {
+      const bg = getComputedStyle(document.documentElement)
+        .getPropertyValue('--background')
+        .trim();
+      if (bg) setThemeOverlayColor(bg);
+    };
+
+    updateOverlayColor();
+
+    const observer = new MutationObserver(updateOverlayColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const applyTransform = (xDeg, yDeg) => {
     const el = sphereRef.current;
@@ -274,7 +279,7 @@ export default function DomeGallery({
       const viewerPad = Math.max(8, Math.round(minDim * padFactor));
       root.style.setProperty('--radius', `${lockedRadiusRef.current}px`);
       root.style.setProperty('--viewer-pad', `${viewerPad}px`);
-      root.style.setProperty('--overlay-blur-color', overlayBlurColor);
+      root.style.setProperty('--overlay-blur-color', resolvedOverlayColor);
       root.style.setProperty('--tile-radius', imageBorderRadius);
       root.style.setProperty('--enlarge-radius', openedImageBorderRadius);
       root.style.setProperty('--image-filter', grayscale ? 'grayscale(1)' : 'none');
@@ -320,7 +325,7 @@ export default function DomeGallery({
     minRadius,
     maxRadius,
     padFactor,
-    overlayBlurColor,
+    resolvedOverlayColor,
     grayscale,
     imageBorderRadius,
     openedImageBorderRadius,
@@ -868,7 +873,7 @@ export default function DomeGallery({
         style={{
           ['--segments-x']: segments,
           ['--segments-y']: segments,
-          ['--overlay-blur-color']: overlayBlurColor,
+          ['--overlay-blur-color']: resolvedOverlayColor,
           ['--tile-radius']: imageBorderRadius,
           ['--enlarge-radius']: openedImageBorderRadius,
           ['--image-filter']: grayscale ? 'grayscale(1)' : 'none'
@@ -880,7 +885,7 @@ export default function DomeGallery({
           style={{
             touchAction: 'none',
             WebkitUserSelect: 'none',
-            backgroundColor: `var(--overlay-blur-color, ${overlayBlurColor})`
+            backgroundColor: `var(--overlay-blur-color, ${resolvedOverlayColor})`
           }}
         >
           <div className="stage">
@@ -930,7 +935,7 @@ export default function DomeGallery({
                       inset: '10px',
                       borderRadius: `var(--tile-radius, ${imageBorderRadius})`,
                       backfaceVisibility: 'hidden',
-                      backgroundColor: `var(--overlay-blur-color, ${overlayBlurColor})`
+                      backgroundColor: `var(--overlay-blur-color, ${resolvedOverlayColor})`
                     }}
                   >
                     <img
@@ -952,15 +957,15 @@ export default function DomeGallery({
           <div
             className="absolute inset-0 m-auto z-[3] pointer-events-none"
             style={{
-              backgroundImage: `radial-gradient(rgba(235, 235, 235, 0) 65%, var(--overlay-blur-color, ${overlayBlurColor}) 100%)`
+              backgroundImage: `radial-gradient(rgba(235, 235, 235, 0) 65%, var(--overlay-blur-color, ${resolvedOverlayColor}) 100%)`
             }}
           />
 
           <div
             className="absolute inset-0 m-auto z-[3] pointer-events-none"
             style={{
-              WebkitMaskImage: `radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, ${overlayBlurColor}) 90%)`,
-              maskImage: `radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, ${overlayBlurColor}) 90%)`,
+              WebkitMaskImage: `radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, ${resolvedOverlayColor}) 90%)`,
+              maskImage: `radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, ${resolvedOverlayColor}) 90%)`,
               backdropFilter: 'blur(3px)'
             }}
           />
@@ -968,13 +973,13 @@ export default function DomeGallery({
           <div
             className="absolute left-0 right-0 top-0 h-[120px] z-[5] pointer-events-none rotate-180"
             style={{
-              background: `linear-gradient(to bottom, transparent, var(--overlay-blur-color, ${overlayBlurColor}))`
+              background: `linear-gradient(to bottom, transparent, var(--overlay-blur-color, ${resolvedOverlayColor}))`
             }}
           />
           <div
             className="absolute left-0 right-0 bottom-0 h-[120px] z-[5] pointer-events-none"
             style={{
-              background: `linear-gradient(to bottom, transparent, var(--overlay-blur-color, ${overlayBlurColor}))`
+              background: `linear-gradient(to bottom, transparent, var(--overlay-blur-color, ${resolvedOverlayColor}))`
             }}
           />
 
