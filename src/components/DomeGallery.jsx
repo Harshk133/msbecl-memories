@@ -43,6 +43,30 @@ const DEFAULT_IMAGES = [
   {
     src: '/group-8.jpeg',
     alt: 'Social media image'
+  },
+  {
+    src: '/group-9.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/group-10.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/group-11.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/group-12.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/single-1.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/photo-1.jpeg',
+    alt: 'Social media image'
   }
 ];
 
