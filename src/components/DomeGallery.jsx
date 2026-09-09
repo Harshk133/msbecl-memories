@@ -61,6 +61,22 @@ const DEFAULT_IMAGES = [
     alt: 'Social media image'
   },
   {
+    src: '/group-13.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/group-14.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/group-15.jpeg',
+    alt: 'Social media image'
+  },
+  {
+    src: '/group-16.jpeg',
+    alt: 'Social media image'
+  },
+  {
     src: '/single-1.jpeg',
     alt: 'Social media image'
   },
@@ -158,8 +174,8 @@ export default function DomeGallery({
   enlargeTransitionMs = DEFAULTS.enlargeTransitionMs,
   segments = DEFAULTS.segments,
   dragDampening = 2,
-  openedImageWidth = '400px',
-  openedImageHeight = '400px',
+  openedImageWidth = '1000px',
+  openedImageHeight = '1000px',
   imageBorderRadius = '30px',
   openedImageBorderRadius = '30px',
   grayscale = true
